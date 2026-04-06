@@ -110,7 +110,7 @@ NEXT_PUBLIC_POKEAPI_URL=https://pokeapi.co/api/v2
 
 ---
 
-## Showdown Export / Import Format:
+## Showdown Export / Import Format Example:
 Weavile @ Heavy-Duty Boots  
 Ability: Pressure  
 Tera Type: Ice  
