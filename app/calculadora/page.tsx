@@ -21,12 +21,12 @@ export default function CalculadoraPage() {
       <h1 className="text-xl font-bold mb-6">Type Calculator</h1>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-white/10 mb-6">
+      <div className="flex gap-4 border-b border-white/10 mb-6">
         {TABS.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`text-xs px-4 py-2 transition-all border-b-2 -mb-px ${
+            className={`text-sm px-4 py-2 transition-all border-b-2 -mb-px ${
               tab === t.id
                 ? "border-white text-white font-bold"
                 : "border-transparent text-white/40 hover:text-white/60"

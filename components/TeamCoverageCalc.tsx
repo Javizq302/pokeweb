@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { ALL_TYPES, analyzeTeamDefense, analyzeTeamOffense, typeDisplayName, TYPE_COLORS } from "@/lib/types";
+import { ALL_TYPES, analyzeTeamDefense, analyzeTeamOffense, typeDisplayName, TYPE_HEX_COLORS } from "@/lib/types";
 
 interface TeamPokemon {
   pokemonName: string;
@@ -148,7 +148,7 @@ export default function TeamCoverageCalc() {
                 <span className="text-[10px] capitalize">{p.name}</span>
                 <div className="flex gap-0.5 ml-1">
                   {p.types.map((t) => (
-                    <span key={t} className={`text-[8px] px-1 py-0.5 capitalize ${TYPE_COLORS[t]} text-black`}>
+                    <span key={t} style={{ backgroundColor: TYPE_HEX_COLORS[t] }} className="text-[8px] px-1 py-0.5 capitalize text-black">
                       {typeDisplayName(t)}
                     </span>
                   ))}
@@ -167,7 +167,7 @@ export default function TeamCoverageCalc() {
               <p className="text-[10px] text-red-400/70 uppercase tracking-wider mb-1">Shared weaknesses (3+ weak)</p>
               <div className="flex flex-wrap gap-1.5">
                 {sharedWeaknesses.map((t) => (
-                  <span key={t} className={`text-[10px] px-2 py-1 capitalize ${TYPE_COLORS[t]} text-black font-medium`}>
+                  <span key={t} style={{ backgroundColor: TYPE_HEX_COLORS[t] }} className="text-[10px] px-2 py-1 capitalize text-black font-medium">
                     {typeDisplayName(t)}
                   </span>
                 ))}
@@ -179,7 +179,7 @@ export default function TeamCoverageCalc() {
               <p className="text-[10px] text-yellow-400/70 uppercase tracking-wider mb-1">No super effective coverage against</p>
               <div className="flex flex-wrap gap-1.5">
                 {uncoveredTypes.map((t) => (
-                  <span key={t} className={`text-[10px] px-2 py-1 capitalize ${TYPE_COLORS[t]} text-black font-medium`}>
+                  <span key={t} style={{ backgroundColor: TYPE_HEX_COLORS[t] }} className="text-[10px] px-2 py-1 capitalize text-black font-medium">
                     {typeDisplayName(t)}
                   </span>
                 ))}
@@ -199,7 +199,7 @@ export default function TeamCoverageCalc() {
               const score = resistCount + immuneCount - weakCount;
               return (
                 <div key={t} className="text-center border border-white/5 py-1.5">
-                  <span className={`text-[8px] px-1.5 py-0.5 capitalize ${TYPE_COLORS[t]} text-black`}>
+                  <span style={{ backgroundColor: TYPE_HEX_COLORS[t] }} className="text-[8px] px-1.5 py-0.5 capitalize text-black">
                     {typeDisplayName(t)}
                   </span>
                   <div className="mt-1 space-y-0.5">
@@ -232,7 +232,7 @@ export default function TeamCoverageCalc() {
               const { bestMult, coveredBy } = offenseAnalysis[t];
               return (
                 <div key={t} className="text-center border border-white/5 py-1.5">
-                  <span className={`text-[8px] px-1.5 py-0.5 capitalize ${TYPE_COLORS[t]} text-black`}>
+                  <span style={{ backgroundColor: TYPE_HEX_COLORS[t] }} className="text-[8px] px-1.5 py-0.5 capitalize text-black">
                     {typeDisplayName(t)}
                   </span>
                   <div className="mt-1">

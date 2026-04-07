@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ALL_TYPES, getDefensiveMatchups, groupByEffectiveness, typeDisplayName, TYPE_COLORS } from "@/lib/types";
+import { ALL_TYPES, getDefensiveMatchups, groupByEffectiveness, typeDisplayName, TYPE_HEX_COLORS } from "@/lib/types";
 
 export default function DefenseCalc() {
   const [type1, setType1] = useState<string>("");
@@ -67,7 +67,7 @@ export default function DefenseCalc() {
           {sprite && <img src={sprite} alt="" className="w-10 h-10 pixelated" />}
           <div className="flex gap-1.5">
             {defenseTypes.map((t) => (
-              <span key={t} className={`text-[10px] px-2 py-1 capitalize ${TYPE_COLORS[t]} text-black font-medium`}>
+              <span key={t} style={{ backgroundColor: TYPE_HEX_COLORS[t] }} className="text-[10px] px-2 py-1 capitalize text-black font-medium">
                 {typeDisplayName(t)}
               </span>
             ))}
@@ -142,7 +142,8 @@ function DefenseGroup({
         {types.map((t) => (
           <span
             key={t}
-            className={`text-[10px] px-2 py-1 capitalize ${TYPE_COLORS[t]} text-black font-medium`}
+            style={{ backgroundColor: TYPE_HEX_COLORS[t] }}
+            className="text-[10px] px-2 py-1 capitalize text-black font-medium"
           >
             {typeDisplayName(t)}
           </span>

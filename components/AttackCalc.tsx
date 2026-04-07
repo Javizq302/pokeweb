@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ALL_TYPES, getOffensiveMatchups, groupByEffectiveness, typeDisplayName, TYPE_COLORS } from "@/lib/types";
+import { ALL_TYPES, getOffensiveMatchups, groupByEffectiveness, typeDisplayName, TYPE_COLORS, TYPE_HEX_COLORS } from "@/lib/types";
 
 export default function AttackCalc() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
@@ -19,10 +19,11 @@ export default function AttackCalc() {
           <button
             key={t}
             onClick={() => setSelectedType(t === selectedType ? null : t)}
+            style={{ backgroundColor: TYPE_HEX_COLORS[t] }}
             className={`text-[10px] px-2 py-1 capitalize transition-all ${
               t === selectedType
-                ? `${TYPE_COLORS[t]} text-black font-bold`
-                : "border border-white/10 text-white/50 hover:border-white/30"
+                ? "text-black font-bold ring-2 ring-white scale-105"
+                : "text-black/80 hover:brightness-110"
             }`}
           >
             {t}
@@ -64,7 +65,8 @@ function EffectivenessGroup({
         {types.map((t) => (
           <span
             key={t}
-            className={`text-[10px] px-2 py-1 capitalize ${TYPE_COLORS[t]} text-black font-medium`}
+            style={{ backgroundColor: TYPE_HEX_COLORS[t] }}
+            className="text-[10px] px-2 py-1 capitalize text-black font-medium"
           >
             {typeDisplayName(t)}
           </span>
