@@ -1,23 +1,46 @@
 "use client";
 
+import { useState } from "react";
+import AttackCalc from "@/components/AttackCalc";
+import DefenseCalc from "@/components/DefenseCalc";
+import TeamCoverageCalc from "@/components/TeamCoverageCalc";
+
+const TABS = [
+  { id: "attack", label: "Attack" },
+  { id: "defense", label: "Defense" },
+  { id: "team", label: "Team Coverage" },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
+
 export default function CalculadoraPage() {
+  const [tab, setTab] = useState<TabId>("attack");
+
   return (
     <div>
       <h1 className="text-xl font-bold mb-6">Type Calculator</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="border border-white/10 p-6 flex flex-col items-center justify-center h-40">
-          <p className="text-sm font-bold mb-1">Attack</p>
-          <p className="text-[10px] text-white/40">Coming in Fase 5</p>
-        </div>
-        <div className="border border-white/10 p-6 flex flex-col items-center justify-center h-40">
-          <p className="text-sm font-bold mb-1">Defense</p>
-          <p className="text-[10px] text-white/40">Coming in Fase 5</p>
-        </div>
-        <div className="border border-white/10 p-6 flex flex-col items-center justify-center h-40">
-          <p className="text-sm font-bold mb-1">Team Coverage</p>
-          <p className="text-[10px] text-white/40">Coming in Fase 5</p>
-        </div>
+
+      {/* Tabs */}
+      <div className="flex gap-0 border-b border-white/10 mb-6">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`text-xs px-4 py-2 transition-all border-b-2 -mb-px ${
+              tab === t.id
+                ? "border-white text-white font-bold"
+                : "border-transparent text-white/40 hover:text-white/60"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
       </div>
+
+      {/* Content */}
+      {tab === "attack" && <AttackCalc />}
+      {tab === "defense" && <DefenseCalc />}
+      {tab === "team" && <TeamCoverageCalc />}
     </div>
   );
 }
