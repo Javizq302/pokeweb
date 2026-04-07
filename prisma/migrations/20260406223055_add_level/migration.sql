@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "TeamPokemon" ADD COLUMN     "level" INTEGER NOT NULL DEFAULT 100;

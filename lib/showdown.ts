@@ -5,11 +5,13 @@ export interface ShowdownPokemon {
   nickname: string | null;
   item: string | null;
   ability: string | null;
+  level: number;
   move1: string | null;
   move2: string | null;
   move3: string | null;
   move4: string | null;
   nature: string | null;
+  teraType: string | null;
   evs: Record<string, number> | null;
   ivs: Record<string, number> | null;
 }
@@ -36,8 +38,10 @@ function parseShowdownBlock(block: string): ShowdownPokemon {
   let nickname: string | null = null;
   let item: string | null = null;
   let ability: string | null = null;
+  let level = 100;
   const moves: string[] = [];
   let nature: string | null = null;
+  let teraType: string | null = null;
   let evs: Record<string, number> | null = null;
   let ivs: Record<string, number> | null = null;
 
@@ -63,6 +67,10 @@ function parseShowdownBlock(block: string): ShowdownPokemon {
 
     if (line.startsWith("Ability:")) {
       ability = line.replace("Ability:", "").trim();
+    } else if (line.startsWith("Level:")) {
+      level = parseInt(line.replace("Level:", "").trim()) || 100;
+    } else if (line.startsWith("Tera Type:")) {
+      teraType = line.replace("Tera Type:", "").trim();
     } else if (line.startsWith("EVs:")) {
       evs = parseStats(line.replace("EVs:", ""));
     } else if (line.startsWith("IVs:")) {
@@ -72,7 +80,7 @@ function parseShowdownBlock(block: string): ShowdownPokemon {
     } else if (line.startsWith("- ")) {
       moves.push(line.replace("- ", "").trim());
     }
-    // Skip lines like "Level:", "Shiny:", "Tera Type:", etc.
+    // Skip lines like "Shiny:", etc.
   }
 
   return {
@@ -80,11 +88,13 @@ function parseShowdownBlock(block: string): ShowdownPokemon {
     nickname: nickname || null,
     item: item || null,
     ability: ability || null,
+    level,
     move1: moves[0] || null,
     move2: moves[1] || null,
     move3: moves[2] || null,
     move4: moves[3] || null,
     nature: nature || null,
+    teraType: teraType || null,
     evs: evs || null,
     ivs: ivs || null,
   };
@@ -111,11 +121,13 @@ export function exportShowdownPokemon(p: {
   nickname?: string | null;
   item?: string | null;
   ability?: string | null;
+  level?: number | null;
   move1?: string | null;
   move2?: string | null;
   move3?: string | null;
   move4?: string | null;
   nature?: string | null;
+  teraType?: string | null;
   evs?: string | null;
   ivs?: string | null;
 }): string {
@@ -132,6 +144,8 @@ export function exportShowdownPokemon(p: {
   lines.push(nameLine);
 
   if (p.ability) lines.push(`Ability: ${p.ability}`);
+  if (p.teraType) lines.push(`Tera Type: ${p.teraType}`);
+  if (p.level && p.level !== 100) lines.push(`Level: ${p.level}`);
 
   // EVs
   const evs = p.evs ? (typeof p.evs === "string" ? JSON.parse(p.evs) : p.evs) : null;
@@ -181,11 +195,13 @@ export function exportShowdownTeam(
     nickname?: string | null;
     item?: string | null;
     ability?: string | null;
+    level?: number | null;
     move1?: string | null;
     move2?: string | null;
     move3?: string | null;
     move4?: string | null;
     nature?: string | null;
+    teraType?: string | null;
     evs?: string | null;
     ivs?: string | null;
   }>

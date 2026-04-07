@@ -9,7 +9,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (isNaN(teamId)) return NextResponse.json({ error: "invalid team id" }, { status: 400 });
 
   const body = await req.json();
-  const { pokemonName, slot, nickname, item, ability, move1, move2, move3, move4, nature, evs, ivs } = body;
+  const { pokemonName, slot, nickname, item, ability, level, move1, move2, move3, move4, nature, teraType, evs, ivs } = body;
 
   if (!pokemonName || typeof pokemonName !== "string") {
     return NextResponse.json({ error: "pokemonName is required" }, { status: 400 });
@@ -25,13 +25,13 @@ export async function POST(req: NextRequest, { params }: Params) {
     where: { teamId_slot: { teamId, slot } },
     create: {
       teamId, pokemonName: pokemonName.toLowerCase(), slot,
-      nickname, item, ability, move1, move2, move3, move4, nature,
+      nickname, item, ability, level: level ?? 100, move1, move2, move3, move4, nature, teraType,
       evs: evs ? JSON.stringify(evs) : null,
       ivs: ivs ? JSON.stringify(ivs) : null,
     },
     update: {
       pokemonName: pokemonName.toLowerCase(),
-      nickname, item, ability, move1, move2, move3, move4, nature,
+      nickname, item, ability, level: level ?? 100, move1, move2, move3, move4, nature, teraType,
       evs: evs ? JSON.stringify(evs) : null,
       ivs: ivs ? JSON.stringify(ivs) : null,
     },

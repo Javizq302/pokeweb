@@ -15,7 +15,9 @@ interface TeamPokemon {
   move2: string | null;
   move3: string | null;
   move4: string | null;
+  level: number;
   nature: string | null;
+  teraType: string | null;
   evs: string | null;
   ivs: string | null;
 }

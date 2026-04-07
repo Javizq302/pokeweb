@@ -4,14 +4,36 @@ type Params = { params: { name: string } };
 
 const POKEAPI_BASE = process.env.NEXT_PUBLIC_POKEAPI_URL || "https://pokeapi.co/api/v2";
 
-// GET /api/pokemon/:name — Proxy to PokéAPI
 export async function GET(_req: NextRequest, { params }: Params) {
   const { name } = params;
+  const formattedName = name.toLowerCase().replace(/\s+/g, "-");
 
-  const res = await fetch(`${POKEAPI_BASE}/pokemon/${name.toLowerCase()}`, {
-    next: { revalidate: 86400 }, // Cache 24h
+  let res = await fetch(`${POKEAPI_BASE}/pokemon/${formattedName}`, {
+    next: { revalidate: 86400 },
   });
 
+  // Si falla, intentar por la lista completa
+  if (!res.ok) {
+    const listRes = await fetch(
+      `${POKEAPI_BASE}/pokemon?limit=100000&offset=0`,
+      { next: { revalidate: 86400 } }
+    );
+    const listData = await listRes.json();
+    const found = listData.results.find(
+      (p: { name: string; url: string }) => p.name === formattedName
+    );
+
+    if (!found) {
+      return NextResponse.json(
+        { error: `Pokemon "${name}" not found` },
+        { status: 404 }
+      );
+    }
+
+    res = await fetch(found.url, { next: { revalidate: 86400 } });
+  }
+
+  // Este check y el return van FUERA del if, aplica para ambos casos
   if (!res.ok) {
     return NextResponse.json(
       { error: `Pokemon "${name}" not found` },
@@ -21,7 +43,6 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
   const data = await res.json();
 
-  // Return only the fields we need
   return NextResponse.json({
     id: data.id,
     name: data.name,
@@ -41,11 +62,8 @@ export async function GET(_req: NextRequest, { params }: Params) {
     sprites: {
       front: data.sprites.front_default,
       front_shiny: data.sprites.front_shiny,
-      artwork:
-        data.sprites.other?.["official-artwork"]?.front_default || null,
+      artwork: data.sprites.other?.["official-artwork"]?.front_default || null,
     },
-    moves: data.moves.map(
-      (m: { move: { name: string } }) => m.move.name
-    ),
+    moves: data.moves.map((m: { move: { name: string } }) => m.move.name),
   });
 }

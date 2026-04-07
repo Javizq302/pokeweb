@@ -34,7 +34,9 @@ model TeamPokemon {
   move2       String?
   move3       String?
   move4       String?
+  level       Int     @default(100)
   nature      String?
+  teraType    String?
   evs         String? // JSON string: {"hp":0,"atk":0,"def":0,"spa":0,"spd":0,"spe":0}
   ivs         String? // JSON string: {"hp":31,"atk":31,"def":31,"spa":31,"spd":31,"spe":31}
   team        Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
