@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { STAT_KEYS, STAT_LABELS, calcAllStats, getNatureInfo, POKEAPI_STAT_MAP } from "@/lib/stats";
+import { getItemSpriteUrl } from "@/components/PokemonEditor";
 
 interface TeamPokemon {
   pokemonName: string;
@@ -22,7 +23,7 @@ interface TeamPokemon {
 interface Props {
   pokemon: TeamPokemon;
   onRemove: () => void;
-  onEdit: () => void;
+  onEdit: (baseStats: Record<string, number> | null) => void;
 }
 
 function parseJson(s: string | null, def: Record<string, number>): Record<string, number> {
@@ -67,7 +68,7 @@ export default function PokemonCard({ pokemon, onRemove, onEdit }: Props) {
     <div className="border border-white/10 p-3 group relative">
       {/* Actions */}
       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={onEdit} className="text-[10px] text-white/40 hover:text-white">edit</button>
+        <button onClick={() => onEdit(baseStats)} className="text-[10px] text-white/40 hover:text-white">edit</button>
         <button onClick={onRemove} className="text-[10px] text-white/40 hover:text-red-400">x</button>
       </div>
 
@@ -86,7 +87,17 @@ export default function PokemonCard({ pokemon, onRemove, onEdit }: Props) {
 
       {/* Details */}
       <div className="text-[10px] text-white/50 space-y-0.5">
-        {pokemon.item && <p>@ {pokemon.item}</p>}
+        {pokemon.item && (
+          <p className="flex items-center gap-1">
+            <img
+              src={getItemSpriteUrl(pokemon.item)}
+              alt={pokemon.item}
+              className="w-4 h-4 pixelated inline-block"
+              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+            <span>@ {pokemon.item}</span>
+          </p>
+        )}
         {pokemon.ability && <p>{pokemon.ability}</p>}
         {pokemon.nature && <p>{pokemon.nature}</p>}
         {pokemon.teraType && <p>Tera: {pokemon.teraType}</p>}

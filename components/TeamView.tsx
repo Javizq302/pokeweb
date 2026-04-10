@@ -36,6 +36,7 @@ interface Props {
 
 export default function TeamView({ team, onRemovePokemon, onPokemonUpdated }: Props) {
   const [editingSlot, setEditingSlot] = useState<number | null>(null);
+  const [editBaseStats, setEditBaseStats] = useState<Record<string, number> | null>(null);
   const slots = [1, 2, 3, 4, 5, 6];
 
   const getPokemonForSlot = (slot: number) =>
@@ -52,11 +53,17 @@ export default function TeamView({ team, onRemovePokemon, onPokemonUpdated }: Pr
                 <PokemonCard
                   pokemon={pokemon}
                   onRemove={() => onRemovePokemon(slot)}
-                  onEdit={() => setEditingSlot(slot)}
+                  onEdit={(baseStats) => {
+                    setEditBaseStats(baseStats);
+                    setEditingSlot(slot);
+                  }}
                 />
               ) : (
                 <button
-                  onClick={() => setEditingSlot(slot)}
+                  onClick={() => {
+                    setEditBaseStats(null);
+                    setEditingSlot(slot);
+                  }}
                   className="w-full h-32 border border-dashed border-white/10 flex items-center justify-center text-white/20 text-xs hover:border-white/30 hover:text-white/40 transition-all"
                 >
                   + Slot {slot}
@@ -72,6 +79,7 @@ export default function TeamView({ team, onRemovePokemon, onPokemonUpdated }: Pr
           teamId={team.id}
           slot={editingSlot}
           existing={getPokemonForSlot(editingSlot)}
+          initialBaseStats={editBaseStats}
           onClose={() => setEditingSlot(null)}
           onSaved={() => {
             setEditingSlot(null);
