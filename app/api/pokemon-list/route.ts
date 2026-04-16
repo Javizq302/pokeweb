@@ -10,16 +10,18 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch(`${POKEAPI_BASE}/pokemon?limit=1025&offset=0`, {
+    const res = await fetch(`${POKEAPI_BASE}/pokemon?limit=1500&offset=0`, {
       next: { revalidate: 86400 },
     });
     const data = await res.json();
 
     cachedList = data.results.map(
-      (p: { name: string; url: string }, i: number) => ({
-        name: p.name,
-        id: i + 1,
-      })
+      (p: { name: string; url: string }) => {
+        // Extract real ID from the URL (e.g. ".../pokemon/10229/" -> 10229)
+        const urlParts = p.url.replace(/\/$/, "").split("/");
+        const id = parseInt(urlParts[urlParts.length - 1], 10);
+        return { name: p.name, id };
+      }
     );
 
     return NextResponse.json(cachedList);

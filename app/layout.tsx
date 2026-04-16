@@ -33,6 +33,9 @@ export default function RootLayout({
             <Link href="/calculadora" className="hover:text-white/80 transition-colors">
               Calculator
             </Link>
+            <Link href="/ffa" className="hover:text-white/80 transition-colors">
+              FFA
+            </Link>
           </div>
         </nav>
         <main className="px-6 py-8 max-w-5xl mx-auto">

@@ -20,6 +20,12 @@ export default function Home() {
         >
           Calculator
         </Link>
+        <Link
+          href="/ffa"
+          className="border border-white/20 px-6 py-3 text-sm hover:bg-white hover:text-black transition-all"
+        >
+          FFA
+        </Link>
       </div>
     </div>
   );

@@ -91,6 +91,107 @@ export function getDefensiveMatchups(defenseTypes: string[]): Record<string, num
   return result;
 }
 
+// ── Ability-based defensive modifiers ──
+
+interface AbilityModifier {
+  immunities?: string[];          // Types the ability makes the Pokémon immune to
+  resistances?: string[];         // Types the ability halves (0.5x multiplier)
+  weaknesses?: string[];          // Types the ability doubles (2x multiplier)
+  superEffectiveReduction?: boolean; // Reduces all super-effective hits to 0.75x (Filter, Solid Rock, Prism Armor)
+  wonderGuard?: boolean;          // Only super-effective moves hit
+}
+
+export const ABILITY_DEFENSIVE_MODIFIERS: Record<string, AbilityModifier> = {
+  // Ground immunities
+  "levitate":       { immunities: ["ground"] },
+  "earth-eater":    { immunities: ["ground"] },
+  // Electric immunities
+  "volt-absorb":    { immunities: ["electric"] },
+  "lightning-rod":  { immunities: ["electric"] },
+  "motor-drive":    { immunities: ["electric"] },
+  // Water immunities
+  "water-absorb":   { immunities: ["water"] },
+  "storm-drain":    { immunities: ["water"] },
+  // Fire immunities
+  "flash-fire":     { immunities: ["fire"] },
+  "well-baked-body": { immunities: ["fire"] },
+  // Grass immunity
+  "sap-sipper":     { immunities: ["grass"] },
+  // Dry Skin: Water immune + Fire takes 1.25x — we approximate Fire as 2x modifier
+  "dry-skin":       { immunities: ["water"], weaknesses: ["fire"] },
+  // Thick Fat: Fire and Ice halved
+  "thick-fat":      { resistances: ["fire", "ice"] },
+  // Heatproof: Fire halved
+  "heatproof":      { resistances: ["fire"] },
+  // Water Bubble: Fire halved
+  "water-bubble":   { resistances: ["fire"] },
+  // Purifying Salt: Ghost halved
+  "purifying-salt": { resistances: ["ghost"] },
+  // Fluffy: Fire doubled (contact halved is move-level, not type-level)
+  "fluffy":         { weaknesses: ["fire"] },
+  // Filter / Solid Rock / Prism Armor: super-effective reduced to 0.75x
+  "filter":         { superEffectiveReduction: true },
+  "solid-rock":     { superEffectiveReduction: true },
+  "prism-armor":    { superEffectiveReduction: true },
+  // Wonder Guard: only super-effective hits
+  "wonder-guard":   { wonderGuard: true },
+};
+
+/**
+ * For a defending type combination + ability, get adjusted multipliers for all attacking types.
+ */
+export function getDefensiveMatchupsWithAbility(
+  defenseTypes: string[],
+  ability: string | null,
+): Record<string, number> {
+  const base = getDefensiveMatchups(defenseTypes);
+
+  if (!ability) return base;
+
+  const slug = ability.toLowerCase().replace(/\s+/g, "-");
+  const mod = ABILITY_DEFENSIVE_MODIFIERS[slug];
+  if (!mod) return base;
+
+  const result = { ...base };
+
+  for (const atk of ALL_TYPES) {
+    let mult = result[atk];
+
+    // Wonder Guard: anything not super-effective becomes 0
+    if (mod.wonderGuard) {
+      if (mult <= 1) {
+        result[atk] = 0;
+        continue;
+      }
+    }
+
+    // Immunities override everything
+    if (mod.immunities?.includes(atk)) {
+      result[atk] = 0;
+      continue;
+    }
+
+    // Resistances: halve the multiplier
+    if (mod.resistances?.includes(atk)) {
+      mult *= 0.5;
+    }
+
+    // Weaknesses: double the multiplier
+    if (mod.weaknesses?.includes(atk)) {
+      mult *= 2;
+    }
+
+    // Super-effective reduction (Filter/Solid Rock/Prism Armor)
+    if (mod.superEffectiveReduction && mult > 1) {
+      mult *= 0.75;
+    }
+
+    result[atk] = mult;
+  }
+
+  return result;
+}
+
 /**
  * For an attacking type, get multipliers against all defending types.
  */

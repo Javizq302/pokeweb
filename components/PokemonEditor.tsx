@@ -187,11 +187,20 @@ export default function PokemonEditor({ teamId, slot, existing, initialBaseStats
       setShowPokeSuggestions(false);
       return;
     }
+    // Normalize: replace spaces with hyphens to match PokeAPI naming (e.g. "growlithe-hisui")
+    const queryHyphenated = query.replace(/\s+/g, "-");
+    // Split into individual search terms for flexible matching (e.g. "hisui growlithe")
+    const queryTerms = query.split(/[\s-]+/).filter(Boolean);
+
     const filtered = allPokemon
-      .filter((p) => p.name.includes(query))
+      .filter((p) => {
+        if (p.name.includes(query) || p.name.includes(queryHyphenated)) return true;
+        if (queryTerms.length > 1 && queryTerms.every((term) => p.name.includes(term))) return true;
+        return false;
+      })
       .sort((a, b) => {
-        const aStarts = a.name.startsWith(query) ? 0 : 1;
-        const bStarts = b.name.startsWith(query) ? 0 : 1;
+        const aStarts = (a.name.startsWith(query) || a.name.startsWith(queryHyphenated)) ? 0 : 1;
+        const bStarts = (b.name.startsWith(query) || b.name.startsWith(queryHyphenated)) ? 0 : 1;
         if (aStarts !== bStarts) return aStarts - bStarts;
         return a.id - b.id;
       })
