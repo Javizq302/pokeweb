@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-type Params = { params: { id: string } };
+type Params = { params: Promise<{ id: string }> };
 
 // GET /api/folders/:id — Get a folder with its teams
 export async function GET(_req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) return NextResponse.json({ error: "invalid id" }, { status: 400 });
 
   const folder = await prisma.folder.findUnique({
@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 // PATCH /api/folders/:id — Rename a folder
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) return NextResponse.json({ error: "invalid id" }, { status: 400 });
 
   const { name } = await req.json();
@@ -36,7 +36,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 // DELETE /api/folders/:id — Delete a folder (cascades to teams & pokemon)
 export async function DELETE(_req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) return NextResponse.json({ error: "invalid id" }, { status: 400 });
 
   await prisma.folder.delete({ where: { id } });

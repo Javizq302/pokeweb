@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-type Params = { params: { id: string } };
+type Params = { params: Promise<{ id: string }> };
 
 // GET /api/teams/:id — Get a team with pokemon
 export async function GET(_req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) return NextResponse.json({ error: "invalid id" }, { status: 400 });
 
   const team = await prisma.team.findUnique({
@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
 // PATCH /api/teams/:id — Update team name or folder
 export async function PATCH(req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) return NextResponse.json({ error: "invalid id" }, { status: 400 });
 
   const body = await req.json();
@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 // DELETE /api/teams/:id — Delete a team
 export async function DELETE(_req: NextRequest, { params }: Params) {
-  const id = parseInt(params.id);
+  const id = parseInt((await params).id);
   if (isNaN(id)) return NextResponse.json({ error: "invalid id" }, { status: 400 });
 
   await prisma.team.delete({ where: { id } });

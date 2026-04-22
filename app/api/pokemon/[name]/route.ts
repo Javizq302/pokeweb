@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
-type Params = { params: { name: string } };
+type Params = { params: Promise<{ name: string }> };
 
 const POKEAPI_BASE = process.env.NEXT_PUBLIC_POKEAPI_URL || "https://pokeapi.co/api/v2";
 
 export async function GET(_req: NextRequest, { params }: Params) {
-  const { name } = params;
+  const { name } = await params;
   const formattedName = name.toLowerCase().replace(/\s+/g, "-");
 
   let res = await fetch(`${POKEAPI_BASE}/pokemon/${formattedName}`, {

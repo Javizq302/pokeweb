@@ -2,11 +2,11 @@ import { prisma } from "@/lib/db";
 import { parseShowdownTeam } from "@/lib/showdown";
 import { NextRequest, NextResponse } from "next/server";
 
-type Params = { params: { id: string } };
+type Params = { params: Promise<{ id: string }> };
 
 // POST /api/teams/:id/import — Import Pokémon Showdown paste into a team
 export async function POST(req: NextRequest, { params }: Params) {
-  const teamId = parseInt(params.id);
+  const teamId = parseInt((await params).id);
   if (isNaN(teamId)) return NextResponse.json({ error: "invalid team id" }, { status: 400 });
 
   const team = await prisma.team.findUnique({ where: { id: teamId } });

@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-type Params = { params: { id: string } };
+type Params = { params: Promise<{ id: string }> };
 
 // POST /api/teams/:id/pokemon — Add or update a pokemon in a team slot
 export async function POST(req: NextRequest, { params }: Params) {
-  const teamId = parseInt(params.id);
+  const teamId = parseInt((await params).id);
   if (isNaN(teamId)) return NextResponse.json({ error: "invalid team id" }, { status: 400 });
 
   const body = await req.json();
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
 // DELETE /api/teams/:id/pokemon — Remove a pokemon from a slot
 export async function DELETE(req: NextRequest, { params }: Params) {
-  const teamId = parseInt(params.id);
+  const teamId = parseInt((await params).id);
   if (isNaN(teamId)) return NextResponse.json({ error: "invalid team id" }, { status: 400 });
 
   const { searchParams } = new URL(req.url);
